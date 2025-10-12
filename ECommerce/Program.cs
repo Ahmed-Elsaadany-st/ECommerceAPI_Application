@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Presistance;
 using Presistance.Data;
+using Presistance.Repositories;
+using Servieces;
+using Servieces.Abstractions;
 using System.Threading.Tasks;
 
 namespace ECommerce
@@ -16,13 +19,19 @@ namespace ECommerce
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+            builder.Services.AddAuthorization();
+            builder.Services.AddControllers()
+           .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly);
+
 
             #region Configure Services
             builder.Services.AddDbContext<StoreDbContext>(op => op.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddScoped<IDataSeeding,DataSeeding>();
+            builder.Services.AddScoped<IUntiOfWork, UnitOfWork>();
+            builder.Services.AddAutoMapper(p => p.AddProfile(new MappingProfiles()));
+            builder.Services.AddScoped<IServiecManager, ServiecManager>();
             #endregion
 
             var app = builder.Build();
@@ -30,7 +39,8 @@ namespace ECommerce
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();
