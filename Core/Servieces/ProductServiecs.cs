@@ -2,7 +2,10 @@
 using Domain.Contracts;
 using Domain.Models;
 using Servieces.Abstractions;
+using Servieces.Specifications;
+using Shared;
 using Shared.DTOs;
+using Shared.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,13 +28,13 @@ namespace Servieces
         public async Task<IEnumerable<BrandDto>> GetAllBrandsAsync()=>
               _mapper.Map<IEnumerable<ProductBrand>, IEnumerable<BrandDto>>(await _untiOfWork.GetRepository<ProductBrand, int>().GetAllAsync());
            
-        public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
-       =>_mapper.Map<IEnumerable<Product>,IEnumerable<ProductDto>>(await _untiOfWork.GetRepository<Product,int>().GetAllAsync());
+        public async Task<IEnumerable<ProductDto>> GetAllProductsAsync(ProcductQueryParams queryParams)
+       =>_mapper.Map<IEnumerable<Product>,IEnumerable<ProductDto>>(await _untiOfWork.GetRepository<Product,int>().GetAllAsync(new ProductWithBrandAndTypeSpecifications(queryParams)));
 
         public async Task<IEnumerable<TypeDto>> GetAllTypesAsync()
         =>_mapper.Map<IEnumerable<ProductType>,IEnumerable<TypeDto>>(await _untiOfWork.GetRepository<ProductType, int>().GetAllAsync());
 
         public async Task<ProductDto?> GetProductByIdAsync(int id)
-       =>_mapper.Map<Product,ProductDto>(await _untiOfWork.GetRepository<Product,int>().GetByIdAsync(id));
+       =>_mapper.Map<Product,ProductDto>(await _untiOfWork.GetRepository<Product,int>().GetByIdAsync(new ProductWithBrandAndTypeSpecifications(id)));
     }
 }

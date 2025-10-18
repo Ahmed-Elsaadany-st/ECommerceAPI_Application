@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Servieces.Specifications;
+
 
 namespace Presistance.Repositories
 {
@@ -21,6 +23,17 @@ namespace Presistance.Repositories
         public void Remove(TEntity entity) => _Context.Set<TEntity>().Remove(entity);
 
         public void Update(TEntity entity) => _Context.Set<TEntity>().Update(entity);
+
+        #region With Specification
+        public async Task<TEntity?> GetByIdAsync(ISpecifications<TEntity, Tkey> specifications)
+        {
+            return await SpecificationEvaluator.BuildQuery(_Context.Set<TEntity>(), specifications).FirstOrDefaultAsync();
+        }
+        public async Task<IEnumerable<TEntity>> GetAllAsync(ISpecifications<TEntity, Tkey> specifications)
+        {
+            return await SpecificationEvaluator.BuildQuery(_Context.Set<TEntity>(), specifications).ToListAsync();
+        }
+        #endregion
 
     }
 }

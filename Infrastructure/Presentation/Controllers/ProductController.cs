@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Servieces.Abstractions;
+using Shared;
 using Shared.DTOs;
+using Shared.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,13 +18,17 @@ namespace Presentation.Controllers
     {
         //Get All Products
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductDto>>> GelAllProducts()
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GelAllProducts([FromQuery]ProcductQueryParams queryParams)
         {
-            var Products= await _serviecManager.ProductServices.GetAllProductsAsync();
+            var Products= await _serviecManager.ProductServices.GetAllProductsAsync(queryParams);
             return Ok(Products);
 
         }  
-        //Get Product By Id
+        /// <summary>
+        /// This Action Get Product By Id
+        /// </summary>
+        /// <param name="Id"> Product Id</param>
+        /// <returns></returns>
         [HttpGet("{Id}")]
         public async Task<ActionResult<ProductDto>> GetById(int Id)
         {
@@ -38,8 +44,10 @@ namespace Presentation.Controllers
             return Ok(Types);
         }
 
-        //Get All Brands
-
+        /// <summary>
+        /// This Action Get All Product Brands
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("Brands")]
         public async Task<ActionResult<IEnumerable<BrandDto>>> GetBrands()
         {

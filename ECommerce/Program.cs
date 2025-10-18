@@ -20,7 +20,24 @@ namespace ECommerce
             // Add services to the container.
 
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "ECommerce System API",
+                    Version = "v1",
+                    Description = "This API handles ECommerce management and Sales.",
+                    Contact = new Microsoft.OpenApi.Models.OpenApiContact
+                    {
+                        Name = "Ahmed El-Saadany",
+                        Email = "ahmed.s.elsaadany2003@gmail.com"
+                    },
+                    License = new Microsoft.OpenApi.Models.OpenApiLicense
+                    {
+                        Name = "MIT License"
+                    }
+                });
+            });
             builder.Services.AddAuthorization();
             builder.Services.AddControllers()
            .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly);
