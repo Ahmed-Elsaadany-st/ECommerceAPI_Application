@@ -13,7 +13,11 @@ namespace Servieces.Specifications
     {
         //Get All Products With Brands And types
         public ProductWithBrandAndTypeSpecifications(ProcductQueryParams queryParams) :
-            base(P=>(!queryParams.BrandId.HasValue|| P.BrandId==queryParams.BrandId)&&(!queryParams.TypeId.HasValue|| P.TypeId==queryParams.TypeId))
+            base (P=>
+            (!queryParams.BrandId.HasValue|| P.BrandId==queryParams.BrandId)
+            &&(!queryParams.TypeId.HasValue|| P.TypeId==queryParams.TypeId)
+            && (string.IsNullOrWhiteSpace(queryParams.SearchValue)||P.Name.Contains(queryParams.SearchValue.ToLower())))
+            
         {
             AddInclude(p=>p.ProductBrand);
             AddInclude(p=>p.ProductType);
