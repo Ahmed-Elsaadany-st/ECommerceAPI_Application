@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Domain.Contracts;
+using Domain.Exceptions;
 using Domain.Models;
 using Servieces.Abstractions;
 using Servieces.Specifications;
@@ -28,13 +29,35 @@ namespace Servieces
         public async Task<IEnumerable<BrandDto>> GetAllBrandsAsync()=>
               _mapper.Map<IEnumerable<ProductBrand>, IEnumerable<BrandDto>>(await _untiOfWork.GetRepository<ProductBrand, int>().GetAllAsync());
            
-        public async Task<IEnumerable<ProductDto>> GetAllProductsAsync(ProcductQueryParams queryParams)
-       =>_mapper.Map<IEnumerable<Product>,IEnumerable<ProductDto>>(await _untiOfWork.GetRepository<Product,int>().GetAllAsync(new ProductWithBrandAndTypeSpecifications(queryParams)));
+        public async Task<PaginatedResult<ProductDto>> GetAllProductsAsync(ProcductQueryParams queryParams)
+        {
+            var Repo=_untiOfWork.GetRepository<Product,int>();
+            var AllProducts=await Repo.GetAllAsync(new ProductWithBrandAndTypeSpecifications(queryParams));
+            var ProductCount = AllProducts.Count();// Get All Products in that page(one page)
+            var Data = _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDto>>(AllProducts);
+            var CountSpec = new ProductCountSpecifications(queryParams);
+            var TotalCount = await Repo.CountAsync(CountSpec);
+            return new PaginatedResult<ProductDto>(queryParams.PageSize,queryParams.PageIndex, TotalCount, Data);
+
+        }
+        //Before Paginated Result I used this line==>
+       //=>_mapper.Map<IEnumerable<Product>,IEnumerable<ProductDto>>(await _untiOfWork.GetRepository<Product,int>().GetAllAsync(new ProductWithBrandAndTypeSpecifications(queryParams)));
 
         public async Task<IEnumerable<TypeDto>> GetAllTypesAsync()
         =>_mapper.Map<IEnumerable<ProductType>,IEnumerable<TypeDto>>(await _untiOfWork.GetRepository<ProductType, int>().GetAllAsync());
 
         public async Task<ProductDto?> GetProductByIdAsync(int id)
-       =>_mapper.Map<Product,ProductDto>(await _untiOfWork.GetRepository<Product,int>().GetByIdAsync(new ProductWithBrandAndTypeSpecifications(id)));
+        {
+            var Specifications = new ProductWithBrandAndTypeSpecifications(id);
+            var Product = await _untiOfWork.GetRepository<Product, int>().GetByIdAsync(Specifications);
+            if (Product is null)
+            {
+                throw new ProductNotFoundException(id);
+            }
+            return _mapper.Map<Product, ProductDto>(Product);
+
+        }
+
+       //=>_mapper.Map<Product,ProductDto>(await _untiOfWork.GetRepository<Product,int>().GetByIdAsync(new ProductWithBrandAndTypeSpecifications(id)));
     }
 }

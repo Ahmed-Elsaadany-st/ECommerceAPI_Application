@@ -1,5 +1,6 @@
 
 using Domain.Contracts;
+using ECommerce.CustomeMiddlewares;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Presistance;
@@ -52,6 +53,7 @@ namespace ECommerce
             #endregion
 
             var app = builder.Build();
+            app.UseMiddleware<CustomeExceptionHandlerMiddleware>();
             await InitailizeDbAsync(app);
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -66,6 +68,8 @@ namespace ECommerce
 
 
             app.MapControllers();
+            app.MapGet("/", () => Results.Redirect("/swagger"));
+
 
             app.Run();
            

@@ -36,7 +36,13 @@ namespace Servieces.Specifications
             if (specifications.IncludeExpressions is not null && specifications.IncludeExpressions.Count > 0)
             {
                 Query = specifications.IncludeExpressions.Aggregate(Query, (CurrentQuery, IncludeExp) => CurrentQuery.Include(IncludeExp));
-            } 
+            }
+            #endregion
+            #region Pagination
+            if (specifications.IsPaginated)
+            {
+                Query=Query.Skip(specifications.Skip).Take(specifications.Take);
+            }
             #endregion
             return Query;
         }

@@ -16,11 +16,15 @@ namespace Servieces.Specifications
             base (P=>
             (!queryParams.BrandId.HasValue|| P.BrandId==queryParams.BrandId)
             &&(!queryParams.TypeId.HasValue|| P.TypeId==queryParams.TypeId)
-            && (string.IsNullOrWhiteSpace(queryParams.SearchValue)||P.Name.Contains(queryParams.SearchValue.ToLower())))
+            && (string.IsNullOrWhiteSpace(queryParams.SearchValue)||P.Name.Contains(queryParams.SearchValue.ToLower()))
+            )
             
         {
-            AddInclude(p=>p.ProductBrand);
-            AddInclude(p=>p.ProductType);
+            #region Loading Related Data
+            AddInclude(p => p.ProductBrand);
+            AddInclude(p => p.ProductType);
+
+            #endregion          
             #region Sorting
             switch (queryParams.sortingOptions)
             {
@@ -36,6 +40,9 @@ namespace Servieces.Specifications
                     break;
             }
 
+            #endregion
+            #region Pagination
+            ApplyPagination(queryParams.PageSize,queryParams.PageIndex);
             #endregion
         }
         //Get Product By Id

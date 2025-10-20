@@ -33,6 +33,12 @@ namespace Presistance.Repositories
         {
             return await SpecificationEvaluator.BuildQuery(_Context.Set<TEntity>(), specifications).ToListAsync();
         }
+
+        public async Task<int> CountAsync(ISpecifications<TEntity, Tkey> specifications)
+        {
+            return await SpecificationEvaluator.BuildQuery(_Context.Set<TEntity>(),specifications).CountAsync();
+            // I Do not Understand the the job of this function(I think it Gets All Products that meet the criteria (in all pages))
+        }
         #endregion
 
     }
