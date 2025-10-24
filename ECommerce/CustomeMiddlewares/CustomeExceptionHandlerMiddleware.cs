@@ -19,6 +19,7 @@ namespace ECommerce.CustomeMiddlewares
             {
                 await _next.Invoke(httpContext);
                 await HandleNotFoundEndPointAsync(httpContext);
+
             }
             catch (Exception ex)
             {

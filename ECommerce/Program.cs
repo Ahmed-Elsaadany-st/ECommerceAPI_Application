@@ -1,6 +1,9 @@
 
 using Domain.Contracts;
 using ECommerce.CustomeMiddlewares;
+using ECommerce.Factories;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Presistance;
@@ -8,6 +11,8 @@ using Presistance.Data;
 using Presistance.Repositories;
 using Servieces;
 using Servieces.Abstractions;
+using Shared.ErrorModels;
+using StackExchange.Redis;
 using System.Threading.Tasks;
 
 namespace ECommerce
@@ -40,6 +45,7 @@ namespace ECommerce
                 });
             });
             builder.Services.AddAuthorization();
+
             builder.Services.AddControllers()
            .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly);
 
@@ -50,6 +56,18 @@ namespace ECommerce
             builder.Services.AddScoped<IUntiOfWork, UnitOfWork>();
             builder.Services.AddAutoMapper(p => p.AddProfile(new MappingProfiles()));
             builder.Services.AddScoped<IServiecManager, ServiecManager>();
+            builder.Services.Configure<ApiBehaviorOptions>((opitons) => 
+            {
+                opitons.InvalidModelStateResponseFactory = ApiResponseFactory.GenerateApiValidationErrorResponse;
+            });
+            builder.Services.AddScoped<IBasketRepository,BasketRepository>();
+            builder.Services.AddSingleton<IConnectionMultiplexer>((_) =>
+            {
+                return ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection"));
+            });
+
+            
+
             #endregion
 
             var app = builder.Build();
