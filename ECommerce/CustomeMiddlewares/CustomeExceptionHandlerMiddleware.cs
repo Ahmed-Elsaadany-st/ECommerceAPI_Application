@@ -32,24 +32,38 @@ namespace ECommerce.CustomeMiddlewares
 
         private static async Task HandleExceptionAsync(HttpContext httpContext, Exception ex)
         {
-            httpContext.Response.StatusCode = ex switch
+            var Response = new ErrorToReturn()
+            {
+                ErrorMessage= ex.Message
+            };
+            Response.StatusCode = ex switch
             {
                 NotFoundException => StatusCodes.Status404NotFound,
-                _ => StatusCodes.Status500InternalServerError
+                UnAuthrizedException => StatusCodes.Status401Unauthorized,
+                BadRequestException badRequestException => GetBadRequestErrors(badRequestException,Response),
+                 _ => StatusCodes.Status500InternalServerError
             };
 
 
 
             //---------------------Set Content Type for Response
             httpContext.Response.ContentType = "application/json";
+            #region Deleted
             //---------------------Response object
-            var Response = new ErrorToReturn()
-            {
-                StatusCode = httpContext.Response.StatusCode,
-                ErrorMessage = ex.Message
-            };
+            //var Response = new ErrorToReturn()
+            //{
+            //    StatusCode = httpContext.Response.StatusCode,
+            //    ErrorMessage = ex.Message
+            //}; 
+            #endregion
             //-------------------Return Object As Json
             await httpContext.Response.WriteAsJsonAsync(Response);
+        }
+
+        private static int GetBadRequestErrors(BadRequestException badRequestException, ErrorToReturn response)
+        {
+            response.Errors = badRequestException.Errors;
+            return StatusCodes.Status400BadRequest;
         }
 
         private static async Task HandleNotFoundEndPointAsync(HttpContext httpContext)

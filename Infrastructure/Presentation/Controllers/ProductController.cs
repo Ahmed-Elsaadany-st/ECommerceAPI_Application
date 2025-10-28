@@ -3,9 +3,11 @@ using Servieces.Abstractions;
 using Shared;
 using Shared.DTOs;
 using Shared.Enums;
+using Shared.ErrorModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,12 +25,11 @@ namespace Presentation.Controllers
             var Products= await _serviecManager.ProductServices.GetAllProductsAsync(queryParams);
             return Ok(Products);
 
-        }  
-        /// <summary>
-        /// This Action Get Product By Id
-        /// </summary>
-        /// <param name="Id"> Product Id</param>
-        /// <returns></returns>
+        }
+        [ProducesResponseType(typeof(ErrorToReturn),(int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ErrorToReturn),(int)HttpStatusCode.InternalServerError)]
+        [ProducesResponseType(typeof(ErrorToReturn),(int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ProductDto),(int)HttpStatusCode.OK)]
         [HttpGet("{Id}")]
         public async Task<ActionResult<ProductDto>> GetById(int Id)
         {

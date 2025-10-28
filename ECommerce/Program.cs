@@ -1,6 +1,7 @@
 
 using Domain.Contracts;
 using ECommerce.CustomeMiddlewares;
+using ECommerce.Extension;
 using ECommerce.Factories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -51,28 +52,14 @@ namespace ECommerce
 
 
             #region Configure Services
-            builder.Services.AddDbContext<StoreDbContext>(op => op.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-            builder.Services.AddScoped<IDataSeeding,DataSeeding>();
-            builder.Services.AddScoped<IUntiOfWork, UnitOfWork>();
-            builder.Services.AddAutoMapper(p => p.AddProfile(new MappingProfiles()));
-            builder.Services.AddScoped<IServiecManager, ServiecManager>();
-            builder.Services.Configure<ApiBehaviorOptions>((opitons) => 
-            {
-                opitons.InvalidModelStateResponseFactory = ApiResponseFactory.GenerateApiValidationErrorResponse;
-            });
-            builder.Services.AddScoped<IBasketRepository,BasketRepository>();
-            builder.Services.AddSingleton<IConnectionMultiplexer>((_) =>
-            {
-                return ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection"));
-            });
-
-            
-
+            builder.Services.AddInfrastructureServices(builder.Configuration);
+            builder.Services.AddCoreServices();
+            builder.Services.AddCustomApiBehavior();
             #endregion
 
             var app = builder.Build();
-            app.UseMiddleware<CustomeExceptionHandlerMiddleware>();
-            await InitailizeDbAsync(app);
+             app.UseCustomeMiddleWareException();
+            await app.SeedDbAsync();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -92,13 +79,6 @@ namespace ECommerce
             app.Run();
            
 
-           async Task InitailizeDbAsync(WebApplication application)
-            {
-                //Create an object from type that implements the IDataSeendign Interface
-                using var scope=application.Services.CreateScope();
-                var DbInitialzer=scope.ServiceProvider.GetRequiredService<IDataSeeding>();
-                await DbInitialzer.SeedAsync();
-            }
         }
     }
 }

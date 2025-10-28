@@ -1,5 +1,7 @@
 ﻿using Domain.Contracts;
 using Domain.Models;
+using Domain.Models.IdentityModule;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Presistance.Data;
 using System;
@@ -11,7 +13,8 @@ using System.Threading.Tasks;
 
 namespace Presistance
 {
-    public class DataSeeding(StoreDbContext _StoreContext) : IDataSeeding
+    public class DataSeeding(StoreDbContext _StoreContext
+        ,RoleManager<IdentityRole> _roleManager,UserManager<ApplicationUser> _userManager) : IDataSeeding
     {
         public  async Task SeedAsync()
         {
@@ -69,6 +72,70 @@ namespace Presistance
             {
 
               
+            }
+        }
+
+        public async Task SeedIdentityDataAsync()
+        {
+            try
+            {
+                //1]Seed Roles
+                if (!_roleManager.Roles.Any())
+                {
+                    await _roleManager.CreateAsync(new IdentityRole("Admin"));
+                    await _roleManager.CreateAsync(new IdentityRole("SuperAdmin"));
+                }
+                //2]Seed Users
+                if (!_userManager.Users.Any())
+                {
+                    var userAdmin = new ApplicationUser()
+                    {
+                        DisplayName = "Admin",
+                        Email = "Admin@gmail.com",
+                        PhoneNumber = "01022689307",
+                        UserName = "Admin"
+                    };
+
+                    var resultAdmin = await _userManager.CreateAsync(userAdmin, "passwordADMIN");
+                    if (!resultAdmin.Succeeded)
+                    {
+                        foreach (var error in resultAdmin.Errors)
+                        {
+                            Console.WriteLine($"Admin Error: {error.Description}");
+                        }
+                    }
+
+                    var userSuperAdmin = new ApplicationUser()
+                    {
+                        DisplayName = "SuperAdmin",
+                        Email = "SuperAdmin@gmail.com",
+                        PhoneNumber = "01022689307",
+                        UserName = "SuperAdmin"
+                    };
+
+                    var resultSuper = await _userManager.CreateAsync(userSuperAdmin, "passwordSUPERADMIN");
+                    if (!resultSuper.Succeeded)
+                    {
+                        foreach (var error in resultSuper.Errors)
+                        {
+                            Console.WriteLine($"SuperAdmin Error: {error.Description}");
+                        }
+                    }
+
+                    // Add to roles only if creation succeeded
+                    if (resultAdmin.Succeeded)
+                        await _userManager.AddToRoleAsync(userAdmin, "Admin");
+
+                    if (resultSuper.Succeeded)
+                        await _userManager.AddToRoleAsync(userSuperAdmin, "SuperAdmin");
+
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
     }

@@ -14,6 +14,7 @@ namespace Presentation.Controllers
     public class BasketsController(IServiecManager _serviecManager) :ControllerBase
     {
         //Get Basket by id 
+        [HttpGet]
         public async Task<ActionResult<BasketDto>> GetBasket(string key)
         {
             var basket=await _serviecManager.basketService.GetBasketAsync(key);
