@@ -9,9 +9,13 @@ namespace Servieces.Abstractions
 {
     public interface IAuthenticationService
     {
-        //Login    =>Returns UserResultDto [Email-DisplayName-Token]  Takes==> [Email-Password]
         Task<UserResultDto> LoginAsync(LoginDto loginDto);
-        //Register =>Returns UserResultDto [Email-DisplayName-Token]  Takes==> [Email-Password-PhoneNumber-UserName-DisplayName]
         Task<UserResultDto> RegisterAsync(RegisterDto registerDto);
+        Task<bool>CheckEmailAsync(string Email);
+        Task<AddressDto>GetCurrentUserAddressAsync(string Email);
+        Task<AddressDto>UpdateCurrentUserAddressAsync(string Email,AddressDto addressDto);
+        Task<UserResultDto>GetCurrentUserAsync(string Email);
+
+
     }
 }

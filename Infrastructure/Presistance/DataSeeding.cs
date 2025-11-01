@@ -1,6 +1,7 @@
 ﻿using Domain.Contracts;
 using Domain.Models;
 using Domain.Models.IdentityModule;
+using Domain.Models.OrderModule;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Presistance.Data;
@@ -67,10 +68,23 @@ namespace Presistance
                 }
 
                 #endregion
+                #region Delivery Method
+                if (!_StoreContext.DeliveryMethods.Any())
+                {
+                    var DeliveryMethodsData = await File.ReadAllTextAsync(@"..\Infrastructure\Presistance\Data\Seeding\delivery.json"); //Getting the data from the json file
+                    var DeliveryMethods = JsonSerializer.Deserialize<List<DeliveryMethod>>(DeliveryMethodsData); // Transforming the data into C# Objects
+                    if (DeliveryMethods is not null && DeliveryMethods.Any())
+                    {
+                        await _StoreContext.DeliveryMethods.AddRangeAsync(DeliveryMethods);
+                        await _StoreContext.SaveChangesAsync();
+                    }
+
+                }
+                #endregion
             }
             catch (Exception ex)
             {
-
+               
               
             }
         }

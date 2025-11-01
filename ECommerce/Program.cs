@@ -55,6 +55,8 @@ namespace ECommerce
             builder.Services.AddInfrastructureServices(builder.Configuration);
             builder.Services.AddCoreServices();
             builder.Services.AddCustomApiBehavior();
+            builder.Services.AddJwtService(builder.Configuration);
+
             #endregion
 
             var app = builder.Build();
@@ -68,7 +70,9 @@ namespace ECommerce
             }
 
             app.UseHttpsRedirection();
-
+            app.UseStaticFiles();
+            app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
