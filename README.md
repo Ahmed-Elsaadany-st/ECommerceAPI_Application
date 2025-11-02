@@ -10,7 +10,7 @@ This project is a **training-based E-Commerce Web API** built using **ASP.NET Co
 - 💳 **Payment Module** – Integrates payment handling logic (simulation or gateway-ready).  
 - 🧺 **Basket Module** – Handles shopping basket operations (add, remove, update items).  
 - 🔐 **Authentication & Authorization** – User registration, login, and role-based access using **ASP.NET Identity** and **JWT Tokens**.  
-- 📦 **Product Management** – (Optional or to be added) manage product catalog.  
+- 📦 **Product Management** –  manage product catalog.  
 - 🧱 **Onion Architecture** – For maintainability, separation of concerns, and scalability.  
 
 ---
@@ -23,7 +23,7 @@ This project is a **training-based E-Commerce Web API** built using **ASP.NET Co
 - **LINQ**
 - **Onion Architecture**
 - **Dependency Injection**
-- **AutoMapper** (if used)
+- **AutoMapper** 
 - **Repository & Unit of Work Patterns**
 - **JWT Authentication**
 
