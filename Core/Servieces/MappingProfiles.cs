@@ -37,6 +37,19 @@ namespace Servieces
             #endregion
             #region Order
             CreateMap<ShippingAddressDto,ShippingAddress>().ReverseMap();
+            //-----------------------------------------
+            CreateMap<Order, OrderToReturnDto>()
+                .ForMember(D => D.DeliveryMethod, o => o.MapFrom(o => o.DeliveryMethod.ShortName))
+                .ForMember(d => d.Total, o => o.MapFrom(s => s.GetTotal()));
+            //-----------------------------------------------
+            CreateMap<OrderItem, OrderItemsDto>()
+            .ForMember(d => d.ProductId, o => o.MapFrom(s => s.product.ProductId))
+            .ForMember(d => d.ProductName, o => o.MapFrom(s => s.product.ProductName))
+            .ForMember(d => d.PictureUrl, o => o.MapFrom<OrderItemPictureUrlResolver>())
+            .ForMember(d => d.Price, o => o.MapFrom(s => s.Price))
+            .ForMember(d => d.Quantity, o => o.MapFrom(s => s.Quantity));
+            //------------------------
+            CreateMap<DeliveryMethod, DeliveryMethodDto>();
             #endregion
         }
     }

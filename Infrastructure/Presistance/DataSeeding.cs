@@ -4,6 +4,7 @@ using Domain.Models.IdentityModule;
 using Domain.Models.OrderModule;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Presistance.Data;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,9 @@ using System.Threading.Tasks;
 namespace Presistance
 {
     public class DataSeeding(StoreDbContext _StoreContext
-        ,RoleManager<IdentityRole> _roleManager,UserManager<ApplicationUser> _userManager) : IDataSeeding
+        ,RoleManager<IdentityRole> _roleManager,
+        UserManager<ApplicationUser> _userManager
+        ) : IDataSeeding
     {
         public  async Task SeedAsync()
         {
@@ -115,7 +118,7 @@ namespace Presistance
                     {
                         foreach (var error in resultAdmin.Errors)
                         {
-                            Console.WriteLine($"Admin Error: {error.Description}");
+                            Console.WriteLine("Admin Error: {Error}", error.Description);
                         }
                     }
 
@@ -132,7 +135,7 @@ namespace Presistance
                     {
                         foreach (var error in resultSuper.Errors)
                         {
-                            Console.WriteLine($"SuperAdmin Error: {error.Description}");
+                            Console.WriteLine("Super Admin Error: {Error}", error.Description);
                         }
                     }
 

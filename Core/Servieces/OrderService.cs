@@ -4,6 +4,7 @@ using Domain.Exceptions;
 using Domain.Models;
 using Domain.Models.OrderModule;
 using Servieces.Abstractions;
+using Servieces.Specifications;
 using Shared.DTOs.OrderDtos;
 using System;
 using System.Collections.Generic;
@@ -49,11 +50,32 @@ namespace Servieces
             //Calculate SubTotal
             var SubTotalo = orderItems.Sum(I => I.Quantity * I.Price);
             //Create Order
-            var order = new Order(Email,orderItems,DeliveryMethod,OrderAddress,SubTotalo);
-            await _untiOfWork.GetRepository<Order, Guid>().AddAsync(order);
+            var orderToCreate = new Order(Email,orderItems,DeliveryMethod,OrderAddress,SubTotalo);
+            await _untiOfWork.GetRepository<Order, Guid>().AddAsync(orderToCreate);
             await _untiOfWork.SaveChangesAsync();
-            return _mapper.Map<Order, OrderToReturnDto>(order);
+            return _mapper.Map<Order, OrderToReturnDto>(orderToCreate);
 
+        }
+
+        public async Task<IEnumerable<DeliveryMethodDto>> GetAllDeliveryMethodsAsync()
+        {
+           var DeliveryMethods= await _untiOfWork.GetRepository<DeliveryMethod,int>().GetAllAsync();
+            return _mapper.Map<IEnumerable<DeliveryMethod>,IEnumerable<DeliveryMethodDto>>(DeliveryMethods);
+        }
+
+        public async Task<IEnumerable<OrderToReturnDto>> GetAllOrdersAsync(string Email)
+        {
+            var Spec = new OrderSpecifications(Email);
+             var orders=await _untiOfWork.GetRepository<Order,Guid>().GetAllAsync(Spec);
+            return _mapper.Map<IEnumerable<OrderToReturnDto>>(orders);
+             
+        }
+
+        public async Task<OrderToReturnDto> GetOrderByIdAsync(Guid Id)
+        {
+            var spec = new OrderSpecifications(Id);
+            var Order=await _untiOfWork.GetRepository<Order,Guid>().GetByIdAsync(spec);
+            return _mapper.Map<OrderToReturnDto>(Order);
         }
     }
 }

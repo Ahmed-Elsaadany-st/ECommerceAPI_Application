@@ -19,7 +19,7 @@ namespace Presistance.Data.Configurations
             //------------------
             builder.HasOne(o=>o.DeliveryMethod).WithMany().HasForeignKey(o => o.DeliveryMethodId);
             //-----------------
-            builder.OwnsOne(o => o.ShippingAddress);
+            builder.OwnsOne(o => o.Address);
 
         }
     }
